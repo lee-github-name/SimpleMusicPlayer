@@ -14,13 +14,13 @@ import java.text.FieldPosition
 class MainActivity : AppCompatActivity() {
     private lateinit var  mMusicContent: MusicContent
     private lateinit var  musicListView: ListView
-    private lateinit var  musicInfoList: List<MusicInfo>
+    private lateinit var  musicInfoList: ArrayList<MusicInfo>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         mMusicContent = MusicContent(this)
-        musicInfoList = mMusicContent.getMusicInfo()
+        musicInfoList = mMusicContent.getMusicInfo() as ArrayList<MusicInfo>
         Log.i("MainActivity", musicInfoList.toString())
         musicListView = findViewById(R.id.music_view)
         musicListView.adapter = MusicInfoAdapter(this,musicInfoList)
@@ -31,7 +31,8 @@ class MainActivity : AppCompatActivity() {
     }
     private fun startPlayMusicActivity(position: Int){
         val intentPlayMusic = Intent(this@MainActivity,PlayMusicActivity::class.java)
-        intentPlayMusic.putExtra("url",musicInfoList[position].url)
+        intentPlayMusic.putExtra("url",musicInfoList )
+        intentPlayMusic.putExtra("position",position)
         startActivity(intentPlayMusic)
     }
 }

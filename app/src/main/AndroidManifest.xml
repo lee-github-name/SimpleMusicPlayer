@@ -17,8 +17,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".activity.PlayMusicActivity"/>
-        <service android:name=".service.PlayMusicService"
-                android:process=":play_music">
+        <service android:name=".service.PlayMusicService">
             <intent-filter>
                 <action android:name="com.lxl.simplemusicplayer.PlayMusicService"/>
 
