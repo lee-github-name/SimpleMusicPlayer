@@ -7,22 +7,30 @@ import android.content.Loader
 import android.database.Cursor
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.provider.MediaStore
-import android.util.Log
 import android.widget.ListView
 import com.lxl.simplemusicplayer.activity.PlayMusicActivity
 import com.lxl.simplemusicplayer.adapter.MusicInfoAdapter
-import com.lxl.simplemusicplayer.engine.MusicContent
 import com.lxl.simplemusicplayer.entity.MusicInfo
 import com.lxl.simplemusicplayer.service.PlayMusicService
 import android.provider.MediaStore.Audio.Media.*
 
 class MainActivity : AppCompatActivity() , LoaderManager.LoaderCallbacks<Cursor> {
-    private lateinit var  musicInfoList: ArrayList<MusicInfo>
+    private  val  musicInfoList: ArrayList<MusicInfo> = ArrayList()
+    private lateinit var musicInfoAdapter: MusicInfoAdapter
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         loaderManager.initLoader(0,null,this)
+        initView()
+    }
+
+    private fun initView() {
+        val musicListView = findViewById<ListView>(R.id.music_view)
+        musicInfoAdapter = MusicInfoAdapter(this, musicInfoList)
+        musicListView.adapter = musicInfoAdapter
+        musicListView.setOnItemClickListener { _, _, position, id ->
+            startPlayMusicActivity(position)
+        }
     }
 
     override fun onCreateLoader(id: Int, args: Bundle?): Loader<Cursor> {
@@ -39,13 +47,9 @@ class MainActivity : AppCompatActivity() , LoaderManager.LoaderCallbacks<Cursor>
     }
 
     override fun onLoadFinished(loader: Loader<Cursor>?, data: Cursor?) {
-        musicInfoList = parseMusicInfoFromCursor(data)
-        Log.i("MainActivity",musicInfoList.toString())
-        val musicListView = findViewById<ListView>(R.id.music_view)
-        musicListView.adapter = MusicInfoAdapter(this,musicInfoList)
-        musicListView.setOnItemClickListener { _, _, position, id ->
-            startPlayMusicActivity(position)
-        }
+        musicInfoList.clear()
+        musicInfoList.addAll(parseMusicInfoFromCursor(data))
+        musicInfoAdapter.notifyDataSetChanged()
     }
 
     override fun onLoaderReset(loader: Loader<Cursor>?) {
