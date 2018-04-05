@@ -13,18 +13,25 @@ import com.lxl.simplemusicplayer.adapter.MusicInfoAdapter
 import com.lxl.simplemusicplayer.entity.MusicInfo
 import com.lxl.simplemusicplayer.service.PlayMusicService
 import android.provider.MediaStore.Audio.Media.*
+import android.util.Log
 
 class MainActivity : AppCompatActivity() , LoaderManager.LoaderCallbacks<Cursor> {
-    private  val  musicInfoList: ArrayList<MusicInfo> = ArrayList()
+    private  lateinit var  musicInfoList: ArrayList<MusicInfo>
     private lateinit var musicInfoAdapter: MusicInfoAdapter
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        initView(savedInstanceState)
         loaderManager.initLoader(0,null,this)
-        initView()
     }
 
-    private fun initView() {
+    override fun onSaveInstanceState(outState: Bundle?) {
+        super.onSaveInstanceState(outState)
+        outState?.putSerializable("url",musicInfoList)
+    }
+
+    private fun initView(savedInstanceState: Bundle?) {
+        musicInfoList = savedInstanceState?.getSerializable("url") as? ArrayList<MusicInfo> ?: ArrayList()
         val musicListView = findViewById<ListView>(R.id.music_view)
         musicInfoAdapter = MusicInfoAdapter(this, musicInfoList)
         musicListView.adapter = musicInfoAdapter
@@ -47,17 +54,16 @@ class MainActivity : AppCompatActivity() , LoaderManager.LoaderCallbacks<Cursor>
     }
 
     override fun onLoadFinished(loader: Loader<Cursor>?, data: Cursor?) {
-        musicInfoList.clear()
-        musicInfoList.addAll(parseMusicInfoFromCursor(data))
-        musicInfoAdapter.notifyDataSetChanged()
+            parseMusicInfoFromCursor(data)
+            musicInfoAdapter.notifyDataSetChanged()
     }
 
     override fun onLoaderReset(loader: Loader<Cursor>?) {
-
+        musicInfoList.clear()
+        Log.i("MainActivity","onLoaderReset")
     }
 
     private fun parseMusicInfoFromCursor(cursor: Cursor?): ArrayList<MusicInfo>{
-        val musicInfoList = ArrayList<MusicInfo>()
         cursor?.apply {
             while (moveToNext()){
                 val id = getLong(getColumnIndex(_ID))
@@ -69,6 +75,7 @@ class MainActivity : AppCompatActivity() , LoaderManager.LoaderCallbacks<Cursor>
                 val size = getLong(getColumnIndex(SIZE))
                 val url = getString(getColumnIndex(DATA))
                 val musicInfo = MusicInfo(id,title,album,artist,displayname,duration,size,url)
+                Log.i("MainActivity","url==$url")
                 musicInfoList.add(musicInfo)
             }
         }
