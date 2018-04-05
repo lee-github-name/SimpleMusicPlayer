@@ -14,11 +14,8 @@ import com.lxl.simplemusicplayer.entity.MusicInfo
 import com.lxl.simplemusicplayer.service.PlayMusicService
 
 class PlayMusicActivity : AppCompatActivity() {
-    lateinit var preButton: Button
-    lateinit var pauseButton: Button
-    lateinit var nextButton: Button
     lateinit var playMusicService: PlayMusicService
-    private var binded = false
+    private var bindService = false
     private lateinit var data: ArrayList<MusicInfo>
     private var currentPlayMusicPosition = 0
     private val connection = object : ServiceConnection {
@@ -28,7 +25,7 @@ class PlayMusicActivity : AppCompatActivity() {
 
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
             val playMusicBinder = service as PlayMusicService.PlayMusicBinder
-            playMusicService = playMusicBinder.getService()
+            playMusicService = playMusicBinder.service
             playMusicService.startMusic(data[currentPlayMusicPosition].url)
         }
     }
@@ -37,7 +34,6 @@ class PlayMusicActivity : AppCompatActivity() {
         Log.i("PlayMusicActivity","onCreate")
         setContentView(R.layout.activity_playmusic)
         initData(savedInstanceState)
-        startPlayMusicService()
         initView()
     }
     override fun onStart() {
@@ -48,7 +44,6 @@ class PlayMusicActivity : AppCompatActivity() {
     override fun onSaveInstanceState(outState: Bundle?) {
         super.onSaveInstanceState(outState)
         Log.i("PlayMusicActivity","onSaveInstanceState")
-
         outState?.putSerializable("url",data)
         outState?.putInt("position",currentPlayMusicPosition)
     }
@@ -63,7 +58,6 @@ class PlayMusicActivity : AppCompatActivity() {
         if (savedInstanceState == null) {
             data = intent.getSerializableExtra("url") as ArrayList<MusicInfo>
             currentPlayMusicPosition = intent.getIntExtra("position", 0)
-
         } else {
             data = savedInstanceState.getSerializable("url") as ArrayList<MusicInfo>
             currentPlayMusicPosition = savedInstanceState.getInt("position")
@@ -73,31 +67,28 @@ class PlayMusicActivity : AppCompatActivity() {
 
 
     private fun bindPlayMusicService() {
-        if (!binded) {
-            binded = true
+        if (!bindService) {
+            bindService = true
             val intentService = Intent(this, PlayMusicService::class.java)
             bindService(intentService, connection, Context.BIND_AUTO_CREATE)
         }
     }
 
-    private fun startPlayMusicService(){
-        val intentService = Intent(this,PlayMusicService::class.java)
-        startService(intentService)
-    }
+
 
     private fun initView(){
-        preButton = findViewById(R.id.pre_music)
+        val preButton = findViewById<Button>(R.id.pre_music)
         preButton.setOnClickListener {
             if (--currentPlayMusicPosition>=0) {
                 Log.i("PlayMusicActivity", "currentPlayMusicPosition== $currentPlayMusicPosition")
                 playMusicService.preMusic(data[currentPlayMusicPosition].url)
             }
         }
-        pauseButton = findViewById(R.id.pause_resume)
+        val pauseButton = findViewById<Button>(R.id.pause_resume)
         pauseButton.setOnClickListener {
             playMusicService.pauseOrResumeMusic()
         }
-        nextButton = findViewById(R.id.next_music)
+        val nextButton = findViewById<Button>(R.id.next_music)
         nextButton.setOnClickListener {
             if (++currentPlayMusicPosition<data?.size!!)
                 playMusicService.preMusic(data[currentPlayMusicPosition].url)
@@ -106,9 +97,9 @@ class PlayMusicActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        if (binded) {
+        if (bindService) {
             unbindService(connection)
-            binded = false
+            bindService = false
         }
     }
 }
