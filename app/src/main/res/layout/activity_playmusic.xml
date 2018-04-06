@@ -21,4 +21,10 @@
         android:text="下一首"
         android:id="@+id/next_music"
         />
+    <SeekBar
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/seekBar"
+        android:max="99"
+        android:progress="0"/>
 </LinearLayout>

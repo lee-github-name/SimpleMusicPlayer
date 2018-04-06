@@ -9,6 +9,7 @@ import android.os.IBinder
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.widget.Button
+import android.widget.SeekBar
 import com.lxl.simplemusicplayer.R
 import com.lxl.simplemusicplayer.entity.MusicInfo
 import com.lxl.simplemusicplayer.service.PlayMusicService
@@ -93,6 +94,21 @@ class PlayMusicActivity : AppCompatActivity() {
             if (++currentPlayMusicPosition<data?.size!!)
                 playMusicService.preMusic(data[currentPlayMusicPosition].url)
         }
+
+        val seekBar = findViewById<SeekBar>(R.id.seekBar)
+        seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener{
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {
+
+            }
+
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {
+
+            }
+        })
     }
 
     override fun onDestroy() {

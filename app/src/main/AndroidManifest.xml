@@ -24,6 +24,14 @@
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </service>
+        <receiver android:name=".service.NotificationReceiver">
+            <intent-filter>
+                <action android:name="com.lxl.simplemusicplayer.pauseorresume"/>
+                <action android:name="com.lxl.simplemusicplayer.premusic"/>
+                <action android:name="com.lxl.simplemusicplayer.nextmusic"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>
