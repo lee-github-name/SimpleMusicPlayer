@@ -7,7 +7,6 @@ import android.app.Service
 import android.content.Intent
 import android.media.MediaPlayer
 import android.os.Binder
-import android.os.Build.VERSION_CODES.N
 import android.os.IBinder
 import android.support.v4.app.NotificationCompat
 import android.widget.RemoteViews
@@ -17,11 +16,12 @@ import com.lxl.simplemusicplayer.constant.Constant
 
 
 class PlayMusicService : Service() , IPlayMusic{
-    private lateinit var mediaPlayer: MediaPlayer
+    private val mediaPlayer: MediaPlayer by lazy {
+        MediaPlayer()
+    }
     private val foregroundId = 101
     override fun onCreate() {
         super.onCreate()
-        mediaPlayer = MediaPlayer()
         initForegroundService()
     }
 
